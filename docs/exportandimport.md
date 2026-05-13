@@ -51,7 +51,7 @@ A new page will open with the following options: **Import Backup File**, **Impor
 
 Choose an import method based on what format of backup you have:
 
-- `authenticator.json` or `authenticator.txt`. If your backup file is plain text with a `.json` or `.txt` file extension, use **Import Backup File**. You may be asked to enter a password if the backup is encrypted.
+- `shield-authenticator.json` or `shield-authenticator.txt`. If your backup file is plain text with a `.json` or `.txt` file extension, use **Import Backup File**. You may be asked to enter a password if the backup is encrypted.
    > The file name may be different if you changed it when you export the backup file or you use cloud backup.
    >
    > If you exported the backup file by clicking the **Download Backup File** or **Download Password-Protected Backup** button, look for your backup on your computer.

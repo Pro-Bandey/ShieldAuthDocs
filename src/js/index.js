@@ -8,8 +8,6 @@ document.addEventListener("DOMContentLoaded", () => {
             e.stopPropagation();
             dropdownMenu.classList.toggle("show");
         });
-
-        // Close dropdown when clicking outside
         document.addEventListener("click", () => {
             dropdownMenu.classList.remove("show");
         });
@@ -19,18 +17,31 @@ document.addEventListener("DOMContentLoaded", () => {
     const docContainer = document.getElementById("markdown-content");
     if (docContainer) {
         loadDocumentation();
+        highlightActiveSidebarLink();
     }
 });
+
+function highlightActiveSidebarLink() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const page = urlParams.get('page') || 'overview';
+    const links = document.querySelectorAll('.sidebar nav a');
+    
+    links.forEach(link => {
+        if (link.getAttribute('href') === `?page=${page}`) {
+            link.classList.add('active');
+        } else {
+            link.classList.remove('active');
+        }
+    });
+}
 
 async function loadDocumentation() {
     const docContainer = document.getElementById("markdown-content");
     const docTitle = document.getElementById("doc-title");
     
-    // Get page from URL, default to 'overview' or 'index'
     const urlParams = new URLSearchParams(window.location.search);
-    let page = urlParams.get('page') || 'overview';
+    let page = urlParams.get('page') || 'overview'; // Changed default to overview
 
-    // Determine path (handle oauth drive-privacy redirect nicely)
     let filePath = `/docs/${page}.md`;
     if (page === 'drive-privacy') {
         filePath = `/oauth/drive-privacy.md`;
@@ -42,36 +53,41 @@ async function loadDocumentation() {
         
         let markdownText = await response.text();
 
-        // -- PRE-PROCESSOR --
+        // -- FIXED PRE-PROCESSOR --
         
-        // A. Extract YAML Frontmatter
         let title = "Documentation";
-        const frontmatterRegex = /^---\n([\s\S]*?)\n---/;
+        
+        // Highly resilient Regex for Frontmatter (handles \r\n and \n)
+        const frontmatterRegex = /^\s*---\r?\n([\s\S]*?)\r?\n---/;
         const match = markdownText.match(frontmatterRegex);
+        
         if (match) {
             const frontmatter = match[1];
-            const titleMatch = frontmatter.match(/title:\s*(.*)/);
-            if (titleMatch) title = titleMatch[1];
             
-            // Remove frontmatter from the text to be rendered
-            markdownText = markdownText.replace(frontmatterRegex, '');
+            // Extract Title robustly (ignoring trailing whitespace/carriage returns)
+            const titleMatch = frontmatter.match(/title:\s*([^\r\n]+)/i);
+            if (titleMatch) {
+                title = titleMatch[1].trim();
+            }
+            
+            // Remove frontmatter block from the actual markdown text
+            markdownText = markdownText.replace(frontmatterRegex, '').trim();
         }
         
-        // Update browser tab and page header
+        // Update browser tab and page header correctly
         document.title = `${title} - Shield Authenticator`;
         if (docTitle) docTitle.textContent = title;
 
-        // B. Parse Jekyll Warnings ({% include warning.html ... %})
+        // Parse Jekyll Warnings
         const alertRegex = /\{%\s*include\s*warning\.html\s*class="([^"]+)"\s*message="([^"]+)"\s*%\}/g;
         markdownText = markdownText.replace(alertRegex, (match, className, message) => {
-            // Strip any inner HTML tags from message if you want it pure, or let it render
             return `<div class="alert ${className}">${message}</div>`;
         });
 
-        // C. Clean up Kramdown table attributes {: .table .table-striped}
+        // Clean up table attributes
         markdownText = markdownText.replace(/\{:\s*\.table[^}]*\}/g, '');
 
-        // -- RENDER WITH MARKED.JS --
+        // Render with marked.js
         if (typeof marked !== 'undefined') {
             docContainer.innerHTML = marked.parse(markdownText);
         } else {
@@ -79,11 +95,12 @@ async function loadDocumentation() {
         }
 
     } catch (error) {
+        if (docTitle) docTitle.textContent = "Page Not Found";
         docContainer.innerHTML = `
             <div class="alert danger">
-                <h3>Page Not Found</h3>
-                <p>We couldn't load the documentation for "${page}".</p>
-                <a href="/docs/index.html">Return to Docs Home</a>
+                <h4>Error 404</h4>
+                <p>We couldn't load the documentation for "${page}". It may have been moved or renamed.</p>
+                <a href="?page=overview" style="color: inherit; margin-top: 10px; display: inline-block;">Return to Overview</a>
             </div>`;
     }
 }
