@@ -1,8 +1,7 @@
-/* Light Theme Variables (Default) */
 :root {
   --primary: #000000;
   --primary-hover: #333333;
-  --primary-text: #ffffff; /* Text color inside primary buttons */
+  --primary-text: #ffffff;
   --bg-main: #f8f9fa;
   --bg-surface: #ffffff;
   --text-main: #202124;
@@ -14,7 +13,6 @@
   --font-family: 'Inter', 'Roboto', 'Segoe UI', system-ui, sans-serif;
 }
 
-/* Dark Theme Variables */
 @media (prefers-color-scheme: dark) {
   :root {
     --primary: #ffffff;
@@ -30,7 +28,6 @@
     --shadow: 0 1px 3px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.3);
   }
   
-  /* Soften images slightly in dark mode */
   .hero-logo img { opacity: 0.9; }
 }
 
@@ -95,12 +92,12 @@ body { font-family: var(--font-family); color: var(--text-main); background: var
 .doc-content th { background: var(--bg-main); font-weight: 600; }
 .doc-content tr:last-child td { border-bottom: none; }
 
-.doc-content .copyright { position: absolute; bottom: 0; display: flex; justify-content: center; align-items: center; background: var(--bg-surface); height: 40px; width: 100%; border-top: 1px solid var(--border); }
+.doc-content .copyright { position: absolute; bottom: 0; display: flex; justify-content: center; align-items: center; background: var(--bg-surface); height: 40px; width: 100%; border-top: 1px solid var(--border); letter-spacing: 1px;}
 
 /* Material Alerts */
 .alert { padding: 20px; border-radius: 8px; margin: 24px 0; border-left: 4px solid; display: flex; flex-direction: column; gap: 8px; font-weight: 500; }
 .alert.danger { background: var(--danger-bg); border-color: var(--danger-text); color: var(--danger-text); }
-.alert h4 { margin-bottom: 0; color: inherit; font-weight: 700; }
+.alert h4 {margin-bottom: 0;color: inherit;font-weight: 900;font-size: 5rem;text-align: center;}
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; margin-block: 5px; }
